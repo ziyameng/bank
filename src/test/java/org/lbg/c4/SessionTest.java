@@ -4,11 +4,36 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class SessionTest
 {
+    @Test
+    public void how_mock_work(){
+        //arrange
+        ArrayList<String> names = mock(ArrayList.class);
+        names.add("ziya");
+//        names.add("B");
+//        names.add("C");
+
+        int expectedResult =3;
+
+        when(names.size()).thenReturn(3);
+
+        //act
+        int actualResult = names.size();
+
+        //assert
+        assertEquals(expectedResult, actualResult);
+
+        verify(names, times(1)).size();
+        verify(names, times(1)).add(any());
+
+    }
+
     @Test
     public void verify_if_basket_has_correct_items()
     {
