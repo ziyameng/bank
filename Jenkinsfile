@@ -1,25 +1,36 @@
 pipeline{
-    agent any
     
-    tools{
-        maven "M3"
+    environment{
+        registry = "ziyathedev/bank2vm"
+        registryCredentials = "DOCKER_LOGIN"
+        dockerImage=""
     }
-  
+
+    agent any
+
     stages{
-        stage('repo setup'){
+        stage('Build Docker Image'){
             steps{
-                git branch:'main', url:'https://github.com/ziyameng/bank.git'
+                script{
+                  dockerImage = docker.build(registry)
+               }
             }
         }
-      
-        stage('build'){
+        stage('Push to Docker Hub'){
             steps{
-                sh "mvn clean compile"
+                script{
+                        docker.withRegistry('', registryCredentials){
+                                dockerImage.push("${env.BUILD_NUMBER}")
+                                dockerImage.push("latest")
+                        }
+                }
             }
         }
-        stage('test'){
+        stage('Clean up'){
             steps{
-                sh 'mvn test'
+                script{
+                        sh 'docker image prune --all --force --filter "until=48h"'
+                }
             }
         }
     }
